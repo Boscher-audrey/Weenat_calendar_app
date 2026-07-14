@@ -5,8 +5,18 @@ import { useState } from 'react'
 declare const isoDateType: unique symbol
 export type IsoDate = string & { [isoDateType]: true }
 
+type CalendarEvent = {
+  id: string
+  date: IsoDate
+  title: string
+}
+
 function App() {
   const [displayedDate, setDisplayedDate] = useState<Date>(new Date())
+  const [selectedDate, setSelectedDate] = useState<IsoDate | null>(null)
+  const [calendarEvents, setCalendarEvents] = useState<Array<CalendarEvent>>([])
+  const [creatingEventInput, setCreatingEventInput] = useState<string>('')
+  const [formVisible, setFormVisible] = useState<boolean>(false)
 
   const daysInMonth = new Date(
     displayedDate.getFullYear(),
@@ -46,6 +56,29 @@ function App() {
     const formatedDate = formatDateToIsoDate(
       new Date(displayedDate.getFullYear(), displayedDate.getMonth(), day),
     )
+
+    setFormVisible(true)
+
+    setSelectedDate(formatedDate)
+  }
+
+  const formOnChange = (value: string) => {
+    setCreatingEventInput(value)
+  }
+
+  const onCreateCalendarEvent = () => {
+    setCalendarEvents([
+      ...calendarEvents,
+      {
+        id: crypto.randomUUID(),
+        date: selectedDate ?? formatDateToIsoDate(displayedDate),
+        title: creatingEventInput,
+      },
+    ])
+
+    setSelectedDate(null)
+    setCreatingEventInput('')
+    setFormVisible(false)
   }
 
   return (
@@ -83,6 +116,33 @@ function App() {
             ),
           )}
         </div>
+
+        {formVisible ? (
+          <div>
+            <input onChange={(event) => formOnChange(event.target.value)}></input>
+            <button onClick={() => onCreateCalendarEvent()}>Créer</button>
+          </div>
+        ) : null}
+
+        {calendarEvents.length !== 0 ? (
+          <div>
+            <p>{calendarEvents.length} évenements :</p>
+            <ul>
+              {[...calendarEvents]
+                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                .map((calendarEvent) => (
+                  <li key={calendarEvent.id}>
+                    Le{' '}
+                    {new Date(calendarEvent.date).toLocaleString('fr-FR', {
+                      day: 'numeric',
+                      month: 'long',
+                    })}
+                    : {calendarEvent.title}
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ) : null}
       </section>
     </>
   )
