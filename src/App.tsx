@@ -2,6 +2,9 @@ import './App.css'
 
 import { useState } from 'react'
 
+declare const isoDateType: unique symbol
+export type IsoDate = string & { [isoDateType]: true }
+
 function App() {
   const [displayedDate, setDisplayedDate] = useState<Date>(new Date())
 
@@ -11,7 +14,7 @@ function App() {
     0,
   ).getDate()
 
-  const daysBeforeFirstDayOfMonth: number =
+  const emptyDaysBeforeFirstDayOfMonth: number =
     (new Date(displayedDate.getFullYear(), displayedDate.getMonth(), 1).getDay() + 6) % 7
 
   const changeDate = (offsetMonth: number, offsetYear: number) => {
@@ -22,15 +25,27 @@ function App() {
 
   const daysTitle = ['lu', 'ma', 'me', 'je', 've', 'sa', 'di']
 
-  const getDaysInMonth = () => {
+  const getCalendarDays = () => {
     const days = Array.from({ length: daysInMonth }, (_, index) => index + 1)
     const emptyDays = []
-    for (let i = 0; i < daysBeforeFirstDayOfMonth; i++) {
+    for (let i = 0; i < emptyDaysBeforeFirstDayOfMonth; i++) {
       emptyDays.push(null)
     }
-    const weeks: Array<string | number | null> = [...emptyDays, ...days]
+    const weeks: Array<number | null> = [...emptyDays, ...days]
 
     return weeks
+  }
+
+  const formatDateToIsoDate = (date: Date): IsoDate => {
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const day = date.getDate().toString().padStart(2, '0')
+    return `${date.getFullYear()}-${month}-${day}` as IsoDate
+  }
+
+  const daysOnClick = (day: number) => {
+    const formatedDate = formatDateToIsoDate(
+      new Date(displayedDate.getFullYear(), displayedDate.getMonth(), day),
+    )
   }
 
   return (
@@ -58,11 +73,11 @@ function App() {
             </div>
           ))}
 
-          {getDaysInMonth().map((day, dayIndex) =>
+          {getCalendarDays().map((day, dayIndex) =>
             day === null ? (
               <div className="day-empty" key={'day-empty-' + dayIndex} />
             ) : (
-              <div className="day" key={'day-' + dayIndex}>
+              <div className="day" key={'day-' + dayIndex} onClick={() => daysOnClick(day)}>
                 {day}
               </div>
             ),
