@@ -106,15 +106,31 @@ function App() {
             </div>
           ))}
 
-          {getCalendarDays().map((day, dayIndex) =>
-            day === null ? (
-              <div className="day-empty" key={'day-empty-' + dayIndex} />
-            ) : (
+          {getCalendarDays().map((day, dayIndex) => {
+            if (day === null) {
+              return <div className="day-empty" key={'day-empty-' + dayIndex} />
+            }
+
+            const calendarDayIsoDate = formatDateToIsoDate(
+              new Date(displayedDate.getFullYear(), displayedDate.getMonth(), day),
+            )
+            const calendarEventsMatchingDay = calendarEvents.filter(
+              (calendarEvent) => calendarEvent.date === calendarDayIsoDate,
+            )
+
+            return (
               <div className="day" key={'day-' + dayIndex} onClick={() => daysOnClick(day)}>
                 {day}
+                {calendarEventsMatchingDay.length !== 0 ? (
+                  <div>
+                    {calendarEventsMatchingDay.map((calendarEventMatchingDay, eventIndex) => (
+                      <p key={eventIndex}>{calendarEventMatchingDay.title}</p>
+                    ))}
+                  </div>
+                ) : null}
               </div>
-            ),
-          )}
+            )
+          })}
         </div>
 
         {formVisible ? (
