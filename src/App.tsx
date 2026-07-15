@@ -15,7 +15,7 @@ function App() {
   const [displayedDate, setDisplayedDate] = useState<Date>(new Date())
   const [selectedDate, setSelectedDate] = useState<IsoDate | null>(null)
   const [calendarEvents, setCalendarEvents] = useState<Array<CalendarEvent>>([])
-  const [creatingEventInput, setCreatingEventInput] = useState<string>('')
+  const [eventTitleInput, setEventTitleInput] = useState<string>('')
   const [formVisible, setFormVisible] = useState<boolean>(false)
 
   const daysInMonth = new Date(
@@ -63,7 +63,7 @@ function App() {
   }
 
   const formOnChange = (value: string) => {
-    setCreatingEventInput(value)
+    setEventTitleInput(value)
   }
 
   const onCreateCalendarEvent = () => {
@@ -72,13 +72,19 @@ function App() {
       {
         id: crypto.randomUUID(),
         date: selectedDate ?? formatDateToIsoDate(displayedDate),
-        title: creatingEventInput,
+        title: eventTitleInput,
       },
     ])
 
     setSelectedDate(null)
-    setCreatingEventInput('')
+    setEventTitleInput('')
     setFormVisible(false)
+  }
+
+  const onDeleteCalendarEvent = (selectedCalendarEvent: CalendarEvent) => {
+    setCalendarEvents(
+      calendarEvents.filter((calendarEvent) => calendarEvent.id !== selectedCalendarEvent.id),
+    )
   }
 
   return (
@@ -123,8 +129,19 @@ function App() {
                 {day}
                 {calendarEventsMatchingDay.length !== 0 ? (
                   <div>
-                    {calendarEventsMatchingDay.map((calendarEventMatchingDay, eventIndex) => (
-                      <p key={eventIndex}>{calendarEventMatchingDay.title}</p>
+                    {calendarEventsMatchingDay.map((calendarEventMatchingDay) => (
+                      <p key={calendarEventMatchingDay.id}>
+                        {calendarEventMatchingDay.title}
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onDeleteCalendarEvent(calendarEventMatchingDay)
+                          }}
+                        >
+                          {' '}
+                          x
+                        </span>
+                      </p>
                     ))}
                   </div>
                 ) : null}
@@ -135,7 +152,10 @@ function App() {
 
         {formVisible ? (
           <div>
-            <input onChange={(event) => formOnChange(event.target.value)}></input>
+            <input
+              value={eventTitleInput}
+              onChange={(event) => formOnChange(event.target.value)}
+            ></input>
             <button onClick={() => onCreateCalendarEvent()}>Créer</button>
           </div>
         ) : null}
