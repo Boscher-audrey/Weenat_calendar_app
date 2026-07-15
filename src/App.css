@@ -10,6 +10,8 @@
 }
 
 .calendar {
+  width: 100%;
+  max-width: 700px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   margin: 24px 0;
@@ -22,6 +24,44 @@
   font-size: 16px;
   padding: 5px 10px;
   color: var(--accent);
+  overflow: hidden;
+}
+
+.day,
+.day-empty {
+  border: 1px solid var(--border);
+  height: 6rem;
+}
+
+.day,
+.day-empty,
+.day-title {
+  box-sizing: border-box;
+}
+
+.event-day {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-align: left;
+  color: var(--text);
+}
+
+.event-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-list {
+  text-align: left;
+}
+
+.delete-event-button {
+  flex-shrink: 0;
+  border: 1px solid var(--accent);
 }
 
 #center {

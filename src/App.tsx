@@ -143,19 +143,23 @@ function App() {
                 {day}
                 {calendarEventsMatchingDay.length !== 0 ? (
                   <div>
-                    {calendarEventsMatchingDay.map((calendarEventMatchingDay) => (
-                      <p key={calendarEventMatchingDay.id}>
-                        {calendarEventMatchingDay.title}
+                    {calendarEventsMatchingDay.slice(0, 2).map((calendarEventMatchingDay) => (
+                      <p className="event-day" key={calendarEventMatchingDay.id}>
+                        <span className="event-title">{calendarEventMatchingDay.title}</span>
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
                             onDeleteCalendarEvent(calendarEventMatchingDay.id)
                           }}
+                          className="delete-event-button"
                         >
                           x
                         </button>
                       </p>
                     ))}
+                    {calendarEventsMatchingDay.length > 2 ? (
+                      <p className="event-day">+ {calendarEventsMatchingDay.length - 2} autres</p>
+                    ) : null}
                   </div>
                 ) : null}
               </div>
@@ -180,12 +184,13 @@ function App() {
               {[...calendarEvents]
                 .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                 .map((calendarEvent) => (
-                  <li key={calendarEvent.id}>
+                  <li className="event-list" key={calendarEvent.id}>
                     Le{' '}
                     {new Date(calendarEvent.date).toLocaleString('fr-FR', {
                       day: 'numeric',
                       month: 'long',
-                    })}
+                      year: 'numeric',
+                    })}{' '}
                     : {calendarEvent.title}
                   </li>
                 ))}

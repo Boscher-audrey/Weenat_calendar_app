@@ -16,7 +16,7 @@ L'application est ensuite accessible sur `http://localhost:5173`.
 - Affichage d'un calendrier mensuel avec alignement correct des jours (semaine commençant le lundi)
 - Navigation mois par mois et année par année
 - Création d'un événement en cliquant sur un jour
-- Affichage des événements directement dans la case du jour concerné
+- Affichage des événements directement dans la case du jour concerné, limité à 2 (voir la liste récapitulative)
 - Suppression d'un événement
 - Liste récapitulative des événements, triée chronologiquement
 
@@ -54,3 +54,5 @@ Ces points ont été identifiés mais volontairement laissés de côté pour res
 - **Accessibilité** : navigation clavier complète dans la grille, attributs ARIA sur les cases
 - **Vue semaine / vue jour** en complément de la vue mensuelle
 - **Design** qui matcherait ce qu'on trouve aujourd'hui dans des calendriers à événements tel que Google Calendar
+- **Peupler les cases vides** en ajoutant les jours du mois précédent et du mois suivant
+- **Navigation depuis la liste** : cliquer sur un événement de la liste positionne le calendrier sur le mois et l'année concernée
