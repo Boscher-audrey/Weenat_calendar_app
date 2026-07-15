@@ -1,6 +1,6 @@
 import './App.css'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 declare const isoDateType: unique symbol
 export type IsoDate = string & { [isoDateType]: true }
@@ -14,9 +14,21 @@ type CalendarEvent = {
 function App() {
   const [displayedDate, setDisplayedDate] = useState<Date>(new Date())
   const [selectedDate, setSelectedDate] = useState<IsoDate | null>(null)
-  const [calendarEvents, setCalendarEvents] = useState<Array<CalendarEvent>>([])
   const [eventTitleInput, setEventTitleInput] = useState<string>('')
   const [formVisible, setFormVisible] = useState<boolean>(false)
+  const [calendarEvents, setCalendarEvents] = useState<Array<CalendarEvent>>(() => {
+    const stored = localStorage.getItem('calendarEvents')
+    if (!stored) return []
+    try {
+      return JSON.parse(stored)
+    } catch {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents))
+  }, [calendarEvents])
 
   const daysInMonth = new Date(
     displayedDate.getFullYear(),
@@ -67,23 +79,25 @@ function App() {
   }
 
   const onCreateCalendarEvent = () => {
-    setCalendarEvents([
-      ...calendarEvents,
-      {
-        id: crypto.randomUUID(),
-        date: selectedDate ?? formatDateToIsoDate(displayedDate),
-        title: eventTitleInput,
-      },
-    ])
+    if (eventTitleInput !== '') {
+      setCalendarEvents([
+        ...calendarEvents,
+        {
+          id: crypto.randomUUID(),
+          date: selectedDate ?? formatDateToIsoDate(displayedDate),
+          title: eventTitleInput,
+        },
+      ])
 
-    setSelectedDate(null)
-    setEventTitleInput('')
-    setFormVisible(false)
+      setSelectedDate(null)
+      setEventTitleInput('')
+      setFormVisible(false)
+    }
   }
 
-  const onDeleteCalendarEvent = (selectedCalendarEvent: CalendarEvent) => {
+  const onDeleteCalendarEvent = (selectedCalendarEventId: string) => {
     setCalendarEvents(
-      calendarEvents.filter((calendarEvent) => calendarEvent.id !== selectedCalendarEvent.id),
+      calendarEvents.filter((calendarEvent) => calendarEvent.id !== selectedCalendarEventId),
     )
   }
 
@@ -132,15 +146,14 @@ function App() {
                     {calendarEventsMatchingDay.map((calendarEventMatchingDay) => (
                       <p key={calendarEventMatchingDay.id}>
                         {calendarEventMatchingDay.title}
-                        <span
+                        <button
                           onClick={(e) => {
                             e.stopPropagation()
-                            onDeleteCalendarEvent(calendarEventMatchingDay)
+                            onDeleteCalendarEvent(calendarEventMatchingDay.id)
                           }}
                         >
-                          {' '}
                           x
-                        </span>
+                        </button>
                       </p>
                     ))}
                   </div>
