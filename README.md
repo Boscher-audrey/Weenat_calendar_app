@@ -41,6 +41,8 @@ L'application est ensuite accessible sur `http://localhost:5173`.
 
 **Lazy initial state** pour la lecture du `localStorage` au montage, afin de ne pas déclencher de rendu supplémentaire.
 
+**Thème du projet** gardé de la création avec Vite
+
 ## Pistes d'amélioration (v2)
 
 Ces points ont été identifiés mais volontairement laissés de côté pour rester dans le périmètre demandé :
