@@ -5,6 +5,7 @@
   --border: #e5e4e7;
   --accent: #aa3bff;
   --accent-bg: rgba(170, 59, 255, 0.1);
+  --shadow: 0px 4px 16px rgba(0, 0, 0, 0.08);
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;

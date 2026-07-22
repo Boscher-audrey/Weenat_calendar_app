@@ -1,11 +1,11 @@
 import './App.css'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { CalendarGrid } from './components/CalendarGrid'
 import { CalendarHeader } from './components/CalendarHeader'
-import { EventForm } from './components/EventForm'
 import { EventList } from './components/EventList'
+import { EventModal } from './components/EventModal'
 import type { CalendarEvent } from './types/calendar.types'
 import { formatDateToIsoDate } from './utils/dates'
 import type { IsoDate } from './utils/dates.types'
@@ -13,8 +13,7 @@ import type { IsoDate } from './utils/dates.types'
 function App() {
   const [displayedDate, setDisplayedDate] = useState<Date>(new Date())
   const [selectedDate, setSelectedDate] = useState<IsoDate | null>(null)
-  const [eventTitleInput, setEventTitleInput] = useState<string>('')
-  const [formVisible, setFormVisible] = useState<boolean>(false)
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [calendarEvents, setCalendarEvents] = useState<Array<CalendarEvent>>(() => {
     const stored = localStorage.getItem('calendarEvents')
     if (!stored) return []
@@ -29,6 +28,20 @@ function App() {
     localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents))
   }, [calendarEvents])
 
+  const onCloseModal = useCallback(() => {
+    setModalVisible(false)
+    setSelectedDate(null)
+  }, [])
+
+  useEffect(() => {
+    // Close modal on escape key press
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCloseModal()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [onCloseModal])
+
   const onChangeDate = (offsetMonth: number, offsetYear: number) => {
     setDisplayedDate(
       new Date(displayedDate.getFullYear() + offsetYear, displayedDate.getMonth() + offsetMonth, 1),
@@ -40,29 +53,23 @@ function App() {
       new Date(displayedDate.getFullYear(), displayedDate.getMonth(), day),
     )
 
-    setFormVisible(true)
-
     setSelectedDate(formatedDate)
+    setModalVisible(true)
   }
 
-  const onChangeForm = (value: string) => {
-    setEventTitleInput(value)
-  }
-
-  const onCreateCalendarEvent = () => {
-    if (eventTitleInput !== '') {
+  const onCreateCalendarEvent = (title: string) => {
+    if (title !== '') {
       setCalendarEvents([
         ...calendarEvents,
         {
           id: crypto.randomUUID(),
           date: selectedDate ?? formatDateToIsoDate(displayedDate),
-          title: eventTitleInput,
+          title,
         },
       ])
 
       setSelectedDate(null)
-      setEventTitleInput('')
-      setFormVisible(false)
+      setModalVisible(false)
     }
   }
 
@@ -86,11 +93,11 @@ function App() {
           onDeleteCalendarEvent={onDeleteCalendarEvent}
         />
 
-        {formVisible ? (
-          <EventForm
-            eventTitleInput={eventTitleInput}
-            onChangeForm={onChangeForm}
+        {modalVisible ? (
+          <EventModal
             onCreateCalendarEvent={onCreateCalendarEvent}
+            onCloseModal={onCloseModal}
+            selectedDate={selectedDate ?? formatDateToIsoDate(displayedDate)}
           />
         ) : null}
 
