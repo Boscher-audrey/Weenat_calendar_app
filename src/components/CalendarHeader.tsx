@@ -3,22 +3,19 @@ type CalendarHeaderProps = {
   onChangeDate: (offsetMonth: number, offsetYear: number) => void
 }
 
-export const CalendarHeader = ({
-  displayedDate,
-  onChangeDate: changeDate,
-}: CalendarHeaderProps) => {
+export const CalendarHeader = ({ displayedDate, onChangeDate }: CalendarHeaderProps) => {
   return (
     <div>
       <div className="date-container">
-        <button onClick={() => changeDate(-1, 0)}>{'<'}</button>
+        <button onClick={() => onChangeDate(-1, 0)}>{'<'}</button>
         <p className="month">{displayedDate.toLocaleString('fr-FR', { month: 'long' })}</p>
-        <button onClick={() => changeDate(1, 0)}>{'>'}</button>
+        <button onClick={() => onChangeDate(1, 0)}>{'>'}</button>
       </div>
 
       <div className="date-container">
-        <button onClick={() => changeDate(0, -1)}>{'<'}</button>
+        <button onClick={() => onChangeDate(0, -1)}>{'<'}</button>
         <p>{displayedDate.toLocaleString('fr-FR', { year: 'numeric' })}</p>
-        <button onClick={() => changeDate(0, 1)}>{'>'}</button>
+        <button onClick={() => onChangeDate(0, 1)}>{'>'}</button>
       </div>
     </div>
   )
